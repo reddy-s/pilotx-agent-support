@@ -2,17 +2,9 @@ service: include('AgentSupportServiceConfig')
 ---
 AgentSupportServiceConfig:
     appName: str()
-    search: include('SearchConfig')
     firebase: include('FirebaseConfig')
-    model: str()
-    compactionPrompt: str()
 ---
 FirebaseConfig:
   project: str()
   database: str()
----
-SearchConfig:
-    host: str()
-    port: int()
-    key: str()
-    collection: str()
+  collection: str()

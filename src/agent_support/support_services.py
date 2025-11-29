@@ -10,7 +10,6 @@ from .storage import FirestoreSessionService
 class AgentSupportService:
     def __init__(self):
         self.app_name = ServiceConfig.get_or_create_instance().appName
-        self.search_config = ServiceConfig.get_or_create_instance().search
         self.conversations = FirestoreSessionService()
 
     async def list_sessions(self, request: ListSessionsRequest, user_id: str) -> dict:

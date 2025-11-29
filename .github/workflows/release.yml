@@ -50,7 +50,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.HOBU_GITHUB_TOKEN }}
+          password: ${{ secrets.REDDYS_GITHUB_TOKEN }}
 
       - name: Build Docker Image
         id: buildImage

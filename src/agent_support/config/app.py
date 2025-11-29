@@ -12,11 +12,8 @@ class ServiceConfig:
 
     _instance = None
     config: dict
-    search: dict
     firebase: dict
     appName: str
-    model: str
-    compactionPrompt: str = "Summarise the Conversation \n {transcript}"
 
     @classmethod
     def get_or_create_instance(cls):

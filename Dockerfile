@@ -10,9 +10,9 @@ FROM python:3.12.8-slim
 
 ARG TAG=unknown
 
-LABEL owner="sangram@metrichub.ai" \
-      group-owner="developer@metrichub.ai" \
-      name="agent-support-service" \
+LABEL owner="sangram@aicraft.io" \
+      group-owner="developer@aicraft.io" \
+      name="pilotx-agent-support-service" \
       version=${TAG}
 
 WORKDIR /app
@@ -25,7 +25,7 @@ COPY resources /app/resources
 COPY api_service.py /app/api_service.py
 
 ENV CONFIG_SCHEMA_PATH=/app/resources/config-schema.yaml \
-    CONFIG_PATH=/app/resources/config/staging.yaml \
+    CONFIG_PATH=/app/resources/config/dev.yaml \
     LOG_CONFIG=/app/resources/log-config.yaml \
     LOG_LEVEL=INFO \
     BUILD_VERSION=${TAG}

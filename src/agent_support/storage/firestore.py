@@ -65,13 +65,11 @@ class FirestoreSessionService(BaseSessionService):
     def __init__(self):
         config = ServiceConfig.get_or_create_instance()
         self.app_name = config.appName
-        self.model = config.model
-        self.compaction_prompt = config.compactionPrompt
 
         if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
             logger.info("GOOGLE_APPLICATION_CREDENTIALS not set; relying on ADC.")
         self.client: AsyncClient = AsyncClient(database=config.firebase["database"])
-        self.col_sessions = self.client.collection("sessions")
+        self.col_sessions = self.client.collection(config.firebase["collection"])
         logger.info(
             "FirestoreSessionService initialised (project=%s)", self.client.project
         )
