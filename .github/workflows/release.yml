@@ -1,0 +1,66 @@
+name: Release Agent Support Service
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  calculate-version:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.vars.outputs.tag }}
+      version: ${{ steps.vars.outputs.version }}
+    steps:
+      - name: Get the version
+        id: vars
+        run: |
+          echo "tag=$(echo ${GITHUB_REF/refs\/tags\//})" >> $GITHUB_OUTPUT
+          echo "version=$(echo ${GITHUB_REF/refs\/tags\/v/})" >> $GITHUB_OUTPUT
+
+  test-build-and-publish:
+    name: Test, build & publish artefact
+    runs-on: ubuntu-latest
+    needs: [ calculate-version ]
+    timeout-minutes: 10
+    env:
+      REGISTRY: ghcr.io
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Increment Version
+        run: uvx hatch version ${{ needs.calculate-version.outputs.version }}
+
+      - name: Package Market Insights Service
+        run: uv build
+
+      - name: Github Images Login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.HOBU_GITHUB_TOKEN }}
+
+      - name: Build Docker Image
+        id: buildImage
+        run: |
+          docker build --build-arg TAG=${{ needs.calculate-version.outputs.tag }} -t $REGISTRY/$REPO:${{ needs.calculate-version.outputs.tag }} .
+          docker tag $REGISTRY/$REPO:${{ needs.calculate-version.outputs.tag }} $REGISTRY/$REPO:latest
+          echo "artefact=${REGISTRY}/${REPO}:${{ needs.calculate-version.outputs.tag }}" >> $GITHUB_OUTPUT
+
+      - name: Push image to GHCR.io
+        id: pushImage
+        run: |
+          docker push $REGISTRY/$REPO:latest
+          docker push ${{ steps.buildImage.outputs.artefact }}

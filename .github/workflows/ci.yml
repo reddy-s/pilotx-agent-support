@@ -1,0 +1,44 @@
+name: Test and Build Agent Support
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - ready_for_review
+      - synchronize
+    branches:
+      - main
+
+jobs:
+  test-and-build:
+    name: Test & build artefact
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      REGISTRY: ghcr.io
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Package agent_support service
+        run: uv build
+
+      - name: Test package installation
+        run: |
+          pip3 install dist/agent_support-*-any.whl
+
+      - name: Test Docker build
+        run: |
+          docker build --build-arg TAG=v0.0.0 -t $REGISTRY/$REPO:latest .
