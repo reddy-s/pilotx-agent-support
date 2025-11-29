@@ -25,6 +25,7 @@ jobs:
     env:
       REGISTRY: ghcr.io
       REPO: ${{ github.repository }}
+    environment: Pipelines
     steps:
       - uses: actions/checkout@v4
 
