@@ -407,7 +407,7 @@ def convert_streaming_events_to_a2a_format(
             **final_state,
             "type": "status",
             "lastResponse": True,
-            "finished": True,
+            "turnComplete": True,
             "agent": "Orchestrator",
         }
         
