@@ -293,7 +293,7 @@ def convert_streaming_events_to_a2a_format(
     # Store events with their timestamps for sorting
     events_with_timestamps = []
     
-    for event in streaming_events:
+    for seq, event in enumerate(streaming_events):
         if not event.get("content"):
             continue
         
@@ -338,6 +338,7 @@ def convert_streaming_events_to_a2a_format(
                 "finished": False,
                 "lastResponse": last_response,
                 "agent": agent,
+                "sequenceNo": seq,
             }
             
             # Store as dict for JSON serialization (matching updater.update_status pattern)
@@ -476,6 +477,7 @@ class AgentSupportService:
         )
         # Serialize A2A events to JSON-serializable format
         serialized_events = [_serialize_a2a_event(event) for event in a2a_events]
+
         return {
             "id": session.id if hasattr(session, "id") else session_id,
             "app_name": session.app_name if hasattr(session, "app_name") else self.app_name,
