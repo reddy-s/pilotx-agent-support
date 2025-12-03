@@ -292,8 +292,9 @@ def convert_streaming_events_to_a2a_format(
     
     # Store events with their timestamps for sorting
     events_with_timestamps = []
-    
-    for seq, event in enumerate(streaming_events):
+    seq = 0
+    for event in streaming_events:
+        seq += 1
         if not event.get("content"):
             continue
         
@@ -365,6 +366,7 @@ def convert_streaming_events_to_a2a_format(
                     "finished": False,
                     "agent": agent,
                     "function_name": function_name,
+                    "sequenceNo": seq,
                 }
             )
             
@@ -410,6 +412,7 @@ def convert_streaming_events_to_a2a_format(
             "lastResponse": True,
             "turnComplete": True,
             "agent": "Orchestrator",
+            "sequenceNo": seq + 1,
         }
         
         # Use the last timestamp from events, or None if no events
